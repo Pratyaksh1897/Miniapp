@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Quiz App</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body { font-family: Arial; text-align: center; }
+    .btn { padding: 10px; margin: 5px; display: block; }
+  </style>
+</head>
+
+<body>
+
+<h2>Quiz App 🧠</h2>
+<div id="question"></div>
+<div id="answers"></div>
+
+<script>
+const tg = window.Telegram.WebApp;
+tg.expand();
+
+let qIndex = 0;
+let score = 0;
+
+const quiz = [
+  {
+    q: "Capital of India?",
+    a: ["Delhi", "Mumbai", "Kolkata"],
+    correct: 0
+  },
+  {
+    q: "2 + 2 = ?",
+    a: ["3", "4", "5"],
+    correct: 1
+  }
+];
+
+function loadQuestion() {
+  let q = quiz[qIndex];
+  document.getElementById("question").innerText = q.q;
+
+  let answersDiv = document.getElementById("answers");
+  answersDiv.innerHTML = "";
+
+  q.a.forEach((ans, i) => {
+    let btn = document.createElement("button");
+    btn.innerText = ans;
+    btn.className = "btn";
+    btn.onclick = () => checkAnswer(i);
+    answersDiv.appendChild(btn);
+  });
+}
+
+function checkAnswer(i) {
+  if (i === quiz[qIndex].correct) score++;
+
+  qIndex++;
+
+  if (qIndex < quiz.length) {
+    loadQuestion();
+  } else {
+    finishQuiz();
+  }
+}
+
+function finishQuiz() {
+  document.body.innerHTML = "<h2>Your Score: " + score + "/" + quiz.length + "</h2>";
+
+  // Send result to bot
+  tg.sendData("Score: " + score);
+}
+
+loadQuestion();
+</script>
+
+</body>
+</html>
